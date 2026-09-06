@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Bahan Baku ID</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: '#00AA5B', // Warna Hijau ala Tokopedia
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Sembunyikan panah atas-bawah pada input number */
+        .no-spinners::-webkit-inner-spin-button,
+        .no-spinners::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .no-spinners {
+            -moz-appearance: textfield;
+        }
+        .modal-hidden {
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+        }
+        
+        /* Animasi mulus untuk keranjang */
+        .cart-item-anim {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased pb-20 overflow-x-hidden">
+
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <div class="bg-brand text-white font-black text-xl px-2 py-1 rounded-md tracking-tighter">
+                    BB
+                </div>
+                <span class="font-bold text-xl text-brand tracking-tight hidden sm:block">Bahan Baku ID</span>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-2xl hidden md:block">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#9CA3AF" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Cari bahan baku (mis: Beras, Ayam)..." class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all text-sm">
+                </div>
+            </div>
+
+            <!-- Cart Checkout Button -->
+            <button id="openCartBtn" class="flex items-center gap-2 border-2 border-brand text-brand hover:bg-brand hover:text-white font-bold py-2 px-4 rounded-lg transition-colors relative group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42a27.75,27.75,0,0,0-2.71-12h-98.1a8,8,0,0,1-7.17-4.6l-3.37-7.4h111.3a24,24,0,0,0,23.6-19.14l17-80A8,8,0,0,0,222.14,58.87ZM88,216a12,12,0,1,1-12-12A12,12,0,0,1,88,216Zm112,0a12,12,0,1,1-12-12A12,12,0,0,1,200,216Zm11.36-120H72.18L64.9,56H206.11Z"></path></svg>
+                <span class="hidden sm:inline">Checkout WA</span>
+                <span id="cartCountBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full shadow-sm hidden">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6">
+        <!-- Banner Promo -->
+        <div class="bg-brand rounded-2xl p-8 mb-8 text-white shadow-md relative overflow-hidden flex justify-between items-center gravity-target">
+            <div class="relative z-10">
+                <h1 class="text-3xl font-extrabold mb-2">Bahan Baku Segar Pilihan</h1>
+                <p class="text-brand-50 opacity-90 text-lg">Kualitas pasar swalayan. Masukkan ke keranjang dan pesan via WhatsApp!</p>
+                <div class="mt-4 bg-white/20 inline-block px-4 py-2 rounded-lg backdrop-blur-sm border border-white/30 text-sm md:text-base leading-relaxed">
+                    <span class="font-bold text-yellow-300">⚠️ INFO PENTING:</span> Semua pemesanan (PO) minimal H-1.<br/>
+                    <span class="font-bold text-yellow-300">💵 PEMBAYARAN:</span> Sistem pembayaran menggunakan <strong>Cash On Delivery (COD)</strong> saat pesanan tiba.<br/>
+                    <span class="font-bold text-yellow-300">🚚 PENGIRIMAN:</span> Pesanan sedikit dipick-up sendiri, pesanan dalam jumlah banyak bisa kami antar.
+                </div>
+            </div>
+            <svg class="absolute right-8 top-1/2 transform -translate-y-1/2 opacity-20 w-32 h-32 hidden md:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><path fill="currentColor" d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42a27.75,27.75,0,0,0-2.71-12h-98.1a8,8,0,0,1-7.17-4.6l-3.37-7.4h111.3a24,24,0,0,0,23.6-19.14l17-80A8,8,0,0,0,222.14,58.87ZM88,216a12,12,0,1,1-12-12A12,12,0,0,1,88,216Zm112,0a12,12,0,1,1-12-12A12,12,0,0,1,200,216Zm11.36-120H72.18L64.9,56H206.11Z"></path></svg>
+        </div>
+
+        <div id="productContainer">
+            <!-- Etalase Produk Akan Diisi via JavaScript -->
+        </div>
+    </main>
+
+    <footer class="max-w-7xl mx-auto px-4 py-8 mt-4 mb-8 border-t border-gray-200 text-center flex justify-center">
+        <div class="flex items-center gap-2 text-gray-500 bg-white py-2 px-4 rounded-lg shadow-sm border border-gray-100 gravity-target">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00AA5B" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
+            <span class="text-sm"><strong>Catatan:</strong> Stok dan harga sewaktu-waktu bisa berubah.</span>
+            
+            <!-- Tombol Rahasia Easter Egg Anti-Gravitasi -->
+            <button onclick="startAntiGravity()" class="ml-2 text-xl hover:scale-125 transition-transform" title="Mode Anti-Gravitasi">🚀</button>
+        </div>
+    </footer>
+
+    <!-- Keranjang Belanja Modal -->
+    <div id="cartModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 modal-hidden backdrop-blur-sm px-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col transform transition-transform duration-300">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#00AA5B" viewBox="0 0 256 256"><path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42a27.75,27.75,0,0,0-2.71-12h-98.1a8,8,0,0,1-7.17-4.6l-3.37-7.4h111.3a24,24,0,0,0,23.6-19.14l17-80A8,8,0,0,0,222.14,58.87ZM88,216a12,12,0,1,1-12-12A12,12,0,0,1,88,216Zm112,0a12,12,0,1,1-12-12A12,12,0,0,1,200,216Zm11.36-120H72.18L64.9,56H206.11Z"></path></svg>
+                        Tinjau Pesanan
+                    </h2>
+                </div>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Body (Isi Keranjang) -->
+            <div id="modalCartItems" class="p-5 flex-1 overflow-y-auto space-y-4 bg-gray-50/50">
+                <!-- Item Keranjang muncul di sini -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-5 border-t border-gray-100 bg-white rounded-b-2xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                
+                <!-- Peringatan Harga -->
+                <div class="mb-4 p-3 bg-brand/10 text-brand text-xs rounded-lg flex items-start gap-2 border border-brand/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" class="mt-0.5 flex-shrink-0"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path></svg>
+                    <p><strong>Perhatian:</strong> Ketersediaan stok dan harga barang dapat berubah. Admin kami akan mengonfirmasi total akhir via WhatsApp. Pembayaran dilakukan secara <strong>Cash On Delivery (COD)</strong>. Pesanan sedikit di pick-up sendiri, pesanan banyak bisa diantar.</p>
+                </div>
+
+                <div class="flex justify-between items-center mb-5">
+                    <span class="font-bold text-gray-600 text-lg">Total Pembayaran:</span>
+                    <span id="modalGrandTotal" class="font-extrabold text-2xl text-brand">Rp 0</span>
+                </div>
+                
+                <button id="checkoutWA" class="w-full bg-brand hover:bg-green-600 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] shadow-md hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.59,9.83a130.64,130.64,0,0,1-43.46-43.46l9.83-14.59a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,76,34.05,29.18,29.18,0,0,0,54.83,43.28a30.56,30.56,0,0,0-8,24.1c4.54,42.54,23.3,82,53.28,112s69.46,48.74,112,53.28a30.73,30.73,0,0,0,24.12-8,29.18,29.18,0,0,0,9.23-21.14A8,8,0,0,0,238,196ZM219.78,217.21a14.57,14.57,0,0,1-11.23,4c-39.73-4.25-76.59-21.71-104-49.12S59.68,107.82,55.43,68.09a14.57,14.57,0,0,1,4-11.23,13.16,13.16,0,0,1,8.37-4.14l13.68,27.35-12,17.84a8,8,0,0,0-.48,8.27,146.54,146.54,0,0,0,56.88,56.88,8,8,0,0,0,8.27-.48l17.84-12,27.35,13.68a13.16,13.16,0,0,1-4.14,8.37Z"></path></svg>
+                    Kirim Pesanan ke WA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database Produk Koperasi
+        const products = [
+            // Karbohidrat
+            { id: 1, name: 'Beras Premium', price: 15000, unit: 'Kg', category: 'Karbohidrat', image: 'beras.png' },
+            { id: 3, name: 'Jagung Manis', price: 17000, unit: 'Kg', category: 'Karbohidrat', image: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=400&q=80' },
+            { id: 4, name: 'Singkong', price: 8000, unit: 'Kg', category: 'Karbohidrat', image: 'singkong.png' },
+            { id: 5, name: 'Ubi Jalar', price: 10000, unit: 'Kg', category: 'Karbohidrat', image: 'ubi_jalar.png' },
+            { id: 30, name: 'Ubi Kuning', price: 10000, unit: 'Kg', category: 'Karbohidrat', image: 'ubi_kuning.png' },
+            { id: 31, name: 'Ubi Ungu', price: 12000, unit: 'Kg', category: 'Karbohidrat', image: 'ubi_ungu.png' },
+            { id: 6, name: 'Kentang Dieng', price: 18000, unit: 'Kg', category: 'Karbohidrat', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=400&q=80' },
+            { id: 52, name: 'Topokki (Tteokbokki)', price: 35000, unit: 'Kg', category: 'Karbohidrat', image: 'topokki.png' },
+            { id: 53, name: 'French Fries Frozen', price: 28000, unit: 'Kg', category: 'Karbohidrat', image: 'french_fries.jpg' },
+            { id: 71, name: 'Kimpul', price: 12000, unit: 'Kg', category: 'Karbohidrat', image: 'kimpul.jpg' },
+
+            // Protein Hewani
+            { id: 8, name: 'Ayam (1 Kg = 10 Potong)', price: 38000, unit: 'Kg', category: 'Protein Hewani', image: 'ayam_potong.png', orderType: 'Delivery' },
+            { id: 32, name: 'Ayam (1 Kg = 12 Potong)', price: 38000, unit: 'Kg', category: 'Protein Hewani', image: 'ayam_potong.png', orderType: 'Delivery' },
+            { id: 38, name: 'Ayam Fillet Dada', price: 51000, unit: 'Kg', category: 'Protein Hewani', image: 'ayam_fillet_dada.png', orderType: 'Delivery' },
+            { id: 39, name: 'Ayam Fillet Paha', price: 48000, unit: 'Kg', category: 'Protein Hewani', image: 'ayam_fillet_paha.png', orderType: 'Delivery' },
+            { id: 40, name: 'Ayam Giling Campur (Fillet, Kulit, Tulang Rangu)', price: 46000, unit: 'Kg', category: 'Protein Hewani', image: 'ayam_giling.png', orderType: 'Delivery' },
+            { id: 61, name: 'Ayam Giling Full Fillet', price: 53000, unit: 'Kg', category: 'Protein Hewani', image: 'ayam_giling.png', orderType: 'Delivery' },
+            { id: 9, name: 'Daging Sapi Segar', price: 140000, unit: 'Kg', category: 'Protein Hewani', image: 'daging_sapi2.jpg', orderType: 'Delivery' },
+            { id: 55, name: 'Iga Sapi (Custom Ukuran Potongan)', price: 85000, unit: 'Kg', category: 'Protein Hewani', image: 'iga_sapi2.jpg', orderType: 'Delivery' },
+            { id: 63, name: 'Beef Slice', price: 100000, unit: 'Kg', category: 'Protein Hewani', image: 'beef_slice.jpg', orderType: 'Delivery' },
+            { id: 10, name: 'Telur Ayam', price: 375000, unit: 'Krat (15 Kg)', category: 'Protein Hewani', image: 'https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&w=400&q=80', orderType: 'Delivery' },
+            { id: 43, name: 'Telur Puyuh', price: 370000, unit: 'Ikat (10 Kg)', category: 'Protein Hewani', image: 'telur_puyuh.jpg', orderType: 'Delivery' },
+            { id: 11, name: 'Ikan Nila Segar (Sudah Dibersihkan, 1 Kg = 6-8 Ekor)', price: 32000, unit: 'Kg', category: 'Protein Hewani', image: 'ikan_nila.jpg', orderType: 'Delivery' },
+            { id: 12, name: 'Ikan Lele (Sudah Dibersihkan)', price: 37000, unit: 'Kg', category: 'Protein Hewani', image: 'ikan_lele.png', orderType: 'Delivery' },
+            { id: 49, name: 'Ikan Tuna Giling', price: 70000, unit: 'Kg', category: 'Protein Hewani', image: 'ikan_tuna_giling.jpg', orderType: 'Delivery' },
+            { id: 62, name: 'Ikan Kakap Fillet', price: 55000, unit: 'Kg', category: 'Protein Hewani', image: 'ikan_kakap.png', orderType: 'Delivery' },
+            { id: 66, name: 'Ikan Dori Fillet', price: 40000, unit: 'Kg', category: 'Protein Hewani', image: 'ikan_dori.png', orderType: 'Delivery' },
+            { id: 84, name: 'Udang', price: 83000, unit: 'Kg', category: 'Protein Hewani', image: 'udang.jpg', orderType: 'Delivery' },
+            { id: 85, name: 'Cumi', price: 75000, unit: 'Kg', category: 'Protein Hewani', image: 'cumi_fresh.jpg', orderType: 'Delivery' },
+            { id: 102, name: 'Cumi Frozen', price: 85000, unit: 'Dus (Isi 9 Kg)', category: 'Protein Hewani', image: 'cumi_frozen.jpg', orderType: 'Delivery' },
+            { id: 86, name: 'Iga Gondrong (Isi 10-12 Potong)', price: 70000, unit: 'Kg', category: 'Protein Hewani', image: 'iga_gondrong.jpg', orderType: 'Delivery' },
+            { id: 87, name: 'Ikan Patin Potong (80-100 gr/ptg)', price: 38000, unit: 'Kg', category: 'Protein Hewani', image: 'ikan_patin.jpg', orderType: 'Delivery' },
+
+            // Protein Nabati
+            { id: 13, name: 'Tahu Putih (Standar, 1 Bungkus = 10 Pcs)', price: 5500, unit: 'Bungkus', category: 'Protein Nabati', image: 'tahu_putih.png', orderType: 'Delivery' },
+            { id: 33, name: 'Tahu Kuning (Standar, 1 Bungkus = 10 Pcs)', price: 5500, unit: 'Bungkus', category: 'Protein Nabati', image: 'tahu_kuning.png', orderType: 'Delivery' },
+            { id: 34, name: 'Tahu Kuning (Besar, 1 Bungkus = 10 Pcs)', price: 7500, unit: 'Bungkus', category: 'Protein Nabati', image: 'tahu_kuning.png', orderType: 'Delivery' },
+            { id: 41, name: 'Tahu Pong', price: 500, unit: 'Pcs', category: 'Protein Nabati', image: 'tahu_pong.png', orderType: 'Delivery' },
+            { id: 14, name: 'Tempe', price: 5000, unit: 'Papan', category: 'Protein Nabati', image: 'tempe.jpg', orderType: 'Delivery' },
+            { id: 72, name: 'Tempe Azaki', price: 8000, unit: 'Papan', category: 'Protein Nabati', image: 'tempe_azaki.png', orderType: 'Delivery' },
+
+            // Sayuran
+            { id: 15, name: 'Bayam Hijau', price: 4000, unit: 'Ikat', category: 'Sayuran', image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=400&q=80' },
+            { id: 16, name: 'Kangkung', price: 3500, unit: 'Ikat', category: 'Sayuran', image: 'kangkung.png' },
+            { id: 17, name: 'Wortel Brastagi', price: 14000, unit: 'Kg', category: 'Sayuran', image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=400&q=80' },
+            { id: 18, name: 'Tomat Merah', price: 10000, unit: 'Kg', category: 'Sayuran', image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=400&q=80' },
+            { id: 19, name: 'Bawang Merah', price: 30000, unit: 'Kg', category: 'Sayuran', image: 'bawang_merah.png' },
+            { id: 20, name: 'Bawang Putih', price: 35000, unit: 'Kg', category: 'Sayuran', image: 'bawang_putih.png' },
+            { id: 56, name: 'Bawang Bombay', price: 30000, unit: 'Kg', category: 'Sayuran', image: 'bawang_bombay.png' },
+            { id: 21, name: 'Cabai Merah Keriting', price: 55000, unit: 'Kg', category: 'Sayuran', image: 'cabai_merah_keriting.png' },
+            { id: 103, name: 'Cabai Merah', price: 35000, unit: 'Kg', category: 'Sayuran', image: 'cabai_merah.png' },
+            { id: 22, name: 'Brokoli', price: 28000, unit: 'Kg', category: 'Sayuran', image: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&w=400&q=80' },
+            { id: 29, name: 'Mix Vegetables', price: 25000, unit: 'Kg', category: 'Sayuran', image: 'mix_vegetables.jpg' },
+            { id: 44, name: 'Edamame', price: 15000, unit: 'Kg', category: 'Sayuran', image: 'edamame.png' },
+            { id: 58, name: 'Putren (Jagung Muda)', price: 15000, unit: 'Kg', category: 'Sayuran', image: 'putren.png' },
+            { id: 59, name: 'Kacang Polong Frozen', price: 35000, unit: 'Pack (1 Kg)', category: 'Sayuran', image: 'kacang_polong.png' },
+            { id: 74, name: 'Kacang Tanah', price: 45000, unit: 'Kg', category: 'Sayuran', image: 'kacang_tanah.png' },
+            { id: 75, name: 'Kacang Tanah Kupas', price: 47000, unit: 'Kg', category: 'Sayuran', image: 'kacang_tanah_kupas.png' },
+            { id: 76, name: 'Timun', price: 10000, unit: 'Kg', category: 'Sayuran', image: 'timun.png' },
+            { id: 77, name: 'Kol Putih', price: 10000, unit: 'Kg', category: 'Sayuran', image: 'kol_putih.png' },
+            { id: 78, name: 'Kunyit', price: 18000, unit: 'Kg', category: 'Sayuran', image: 'kunyit.jpg' },
+            { id: 79, name: 'Jahe', price: 18000, unit: 'Kg', category: 'Sayuran', image: 'jahe.png' },
+            { id: 80, name: 'Buncis', price: 12000, unit: 'Kg', category: 'Sayuran', image: 'buncis.png' },
+            { id: 81, name: 'Ketumbar', price: 10000, unit: 'Pack', category: 'Sayuran', image: 'ketumbar.jpg' },
+            { id: 82, name: 'Bawang Daun', price: 18000, unit: 'Kg', category: 'Sayuran', image: 'bawang_daun.png' },
+            { id: 83, name: 'Sawi Hijau', price: 6000, unit: 'Ikat', category: 'Sayuran', image: 'sawi_hijau.png' },
+            { id: 89, name: 'Jagung Pipil', price: 26000, unit: 'Kg', category: 'Sayuran', image: 'jagung_pipil.png' },
+            { id: 90, name: 'Jamur Tiram', price: 25000, unit: 'Kg', category: 'Sayuran', image: 'jamur_tiram.png' },
+            { id: 104, name: 'Lengkuas', price: 13000, unit: 'Kg', category: 'Sayuran', image: 'lengkuas.png' },
+            { id: 91, name: 'Selada', price: 15000, unit: 'Kg', category: 'Sayuran', image: 'selada.png' },
+            { id: 92, name: 'Pakcoy', price: 10000, unit: 'Kg', category: 'Sayuran', image: 'pakcoy.png' },
+            { id: 93, name: 'Kemiri', price: 40000, unit: 'Kg', category: 'Sayuran', image: 'kemiri.png' },
+            { id: 94, name: 'Daun Seledri', price: 5000, unit: 'Ikat', category: 'Sayuran', image: 'seledri.png' },
+            { id: 95, name: 'Kacang Merah', price: 25000, unit: 'Kg', category: 'Sayuran', image: 'kacang_merah.png' },
+            { id: 98, name: 'Selada Air', price: 15000, unit: 'Kg', category: 'Sayuran', image: 'selada_air.png' },
+
+            // Buah-buahan
+            { id: 64, name: 'Jeruk Polos (1 Kg = 15-16 Pcs)', price: 12000, unit: 'Kg', category: 'Buah-buahan', image: 'jeruk_polos.png' },
+            { id: 65, name: 'Jeruk Sedang (1 Kg = 10-12 Pcs)', price: 16000, unit: 'Kg', category: 'Buah-buahan', image: 'jeruk_polos.png' },
+            { id: 25, name: 'Buah Naga Merah', price: 22000, unit: 'Kg', category: 'Buah-buahan', image: 'https://images.unsplash.com/photo-1527325678964-54921661f888?auto=format&fit=crop&w=400&q=80' },
+            { id: 26, name: 'Pisang Sunpride', price: 20000, unit: 'Sisir', category: 'Buah-buahan', image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=400&q=80' },
+            { id: 28, name: 'Mangga Harumanis', price: 25000, unit: 'Kg', category: 'Buah-buahan', image: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=400&q=80' },
+            { id: 45, name: 'Buah Lengkeng', price: 45000, unit: 'Keranjang (Isi 10,5 Kg)', category: 'Buah-buahan', image: 'kelengkeng.png' },
+            { id: 46, name: 'Buah Semangka', price: 15000, unit: 'Kg', category: 'Buah-buahan', image: 'semangka.jpg' },
+            { id: 47, name: 'Buah Melon', price: 18000, unit: 'Kg', category: 'Buah-buahan', image: 'melon.png' },
+            { id: 57, name: 'Pisang Ambon', price: 168000, unit: 'Keranjang (Isi 13 Kg)', category: 'Buah-buahan', image: 'pisang_ambon.jpg' },
+            { id: 67, name: 'Anggur China Pita', price: 50000, unit: 'Keranjang (Isi 6 Kg)', category: 'Buah-buahan', image: 'anggur_china.png' },
+            { id: 73, name: 'Buah Leci', price: 40000, unit: 'Kg', category: 'Buah-buahan', image: 'buah_leci.png', inStock: false },
+            { id: 68, name: 'Buah Pear', price: 30000, unit: 'Kg', category: 'Buah-buahan', image: 'buah_pear.png', inStock: false },
+            { id: 88, name: 'Mangga Golek', price: 18000, unit: 'Kg', category: 'Buah-buahan', image: 'mangga_golek.jpg' },
+            { id: 96, name: 'Buah Kiwi', price: 50000, unit: 'Kg', category: 'Buah-buahan', image: 'kiwi.png' },
+            { id: 97, name: 'Buah Strawberry', price: 45000, unit: 'Kg', category: 'Buah-buahan', image: 'strawberry.jpg' },
+
+            // Susu
+            { id: 35, name: 'Susu Full Cream 115 ml', price: 115000, unit: 'Karton (40 pcs)', category: 'Susu', image: 'susu_115ml.png' },
+            { id: 54, name: 'Susu Full Cream 200 ml', price: 130000, unit: 'Karton (24 pcs)', category: 'Susu', image: 'susu_200ml.png' },
+            { id: 36, name: 'Susu Full Cream 1 Liter', price: 276000, unit: 'Karton (12 Pcs)', category: 'Susu', image: 'susu_1L.jpg' },
+
+            // Minyak
+            { id: 48, name: 'Minyak Goreng Masku 2 Liter', price: 255000, unit: 'Karton', category: 'Minyak', image: 'minyak_goreng.png', inStock: false },
+            { id: 101, name: 'Minyak Goreng Sunco 2 Liter', price: 270000, unit: 'Karton', category: 'Minyak', image: 'minyak_sunco.png', inStock: false },
+
+            // Roti-rotian
+            { id: 50, name: 'Roti Burger (Isi 10)', price: 15000, unit: 'Pack', category: 'Roti-rotian', image: 'roti_burger2.jpg' },
+            { id: 51, name: 'Roti Hotdog (Isi 10)', price: 15000, unit: 'Pack', category: 'Roti-rotian', image: 'roti_hotdog.png' },
+            { id: 60, name: 'Roti Tawar (Isi 18 Pcs)', price: 14000, unit: 'Bungkus', category: 'Roti-rotian', image: 'roti_tawar.png' },
+            { id: 100, name: 'Roti Tawar (Isi 15 Pcs)', price: 12000, unit: 'Bungkus', category: 'Roti-rotian', image: 'roti_tawar_baru.jpg' },
+
+            // Jasa
+            { id: 99, name: 'Jasa Giling Adonan Bakso (Termasuk Bahan Bantu, Bawa Daging Sendiri)', price: 15000, unit: 'Kg', category: 'Jasa', image: 'jasa_giling_bakso.png' }
+        ];
+
+        let cart = {}; // Object untuk menampung pesanan
+
+        // Format angka ke Rupiah
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        }
+
+        // Ikon per kategori
+        const categoryIcons = {
+            'Karbohidrat': '🌾',
+            'Protein Hewani': '🥩',
+            'Protein Nabati': '🌱',
+            'Buah-buahan': '🍎',
+            'Sayuran': '🥬',
+            'Susu': '🥛',
+            'Minyak': '🍾',
+            'Roti-rotian': '🍞',
+            'Jasa': '⚙️'
+        };
+
+        function renderProducts(searchQuery = '') {
+            const container = document.getElementById('productContainer');
+            container.innerHTML = '';
+
+            const categories = [...new Set(products.map(p => p.category))];
+
+            categories.forEach(category => {
+                const categoryProducts = products.filter(p => 
+                    p.category === category && 
+                    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+
+                if (categoryProducts.length === 0) return;
+
+                let html = `
+                    <div class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-5 pb-2 border-b-2 border-gray-100">
+                            ${category} <span class="text-xl ml-1">${categoryIcons[category]}</span>
+                        </h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                `;
+
+                categoryProducts.forEach(product => {
+                    html += `
+                        <div class="bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-100 overflow-hidden transition-all duration-300 flex flex-col gravity-target">
+                            <!-- Gambar Produk -->
+                            <div class="relative w-full pb-[100%] overflow-hidden bg-gray-50">
+                                <img src="${product.image}" alt="${product.name}" 
+                                     onerror="this.src='https://placehold.co/400x400/eeeeee/999999?text=${product.name}'"
+                                     class="absolute top-0 left-0 w-full h-full object-cover ${product.id === 87 ? 'scale-150 translate-y-8' : ''}">
+                            </div>
+                            
+                            <!-- Info Produk -->
+                            <div class="p-4 flex flex-col flex-grow">
+                                <h3 class="text-sm md:text-base text-gray-800 mb-1 leading-tight flex-grow">${product.name}</h3>
+                                
+                                <div>
+                                    <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border ${product.orderType === 'Delivery' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-orange-100 text-orange-700 border-orange-200'}">
+                                        ${product.orderType || 'Pickup'}
+                                    </span>
+                                </div>
+                                
+                                <div class="mt-2 mb-3">
+                                    <span class="font-extrabold text-gray-900 text-lg">${formatRupiah(product.price)}</span>
+                                    <span class="text-xs text-gray-400 font-medium block md:inline md:ml-1">/ ${product.unit}</span>
+                                </div>
+                                
+                                ${product.inStock === false ? 
+                                `<button disabled class="w-full border border-gray-300 text-gray-400 bg-gray-100 font-semibold py-2 px-3 rounded-lg text-sm cursor-not-allowed">
+                                    Stok Kosong
+                                </button>` :
+                                `<button onclick="addToCart(${product.id})" class="w-full border border-brand text-brand hover:bg-brand hover:text-white font-semibold py-2 px-3 rounded-lg text-sm transition-colors active:scale-95">
+                                    + Keranjang
+                                </button>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+                container.innerHTML += html;
+            });
+
+            if (container.innerHTML === '') {
+                container.innerHTML = '<div class="text-center py-10 text-gray-500">Pencarian tidak ditemukan.</div>';
+            }
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (cart[productId]) {
+                cart[productId].qty += 1;
+            } else {
+                cart[productId] = { ...product, qty: 1 };
+            }
+            updateCartBadge();
+            
+            // Animasi getar pada tombol
+            const btn = document.getElementById('openCartBtn');
+            btn.classList.add('scale-110');
+            setTimeout(() => btn.classList.remove('scale-110'), 200);
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cartCountBadge');
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+            
+            if (totalItems > 0) {
+                badge.textContent = totalItems;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Mengubah jumlah lewat tombol plus/minus
+        function updateQty(id, delta) {
+            if (cart[id]) {
+                const newQty = cart[id].qty + delta;
+                if (newQty > 0) {
+                    cart[id].qty = newQty;
+                } else {
+                    delete cart[id];
+                }
+                updateCartBadge();
+                renderCartModal();
+            }
+        }
+
+        // Mengubah jumlah secara manual (ketik langsung)
+        function updateQtyManual(id, newQty) {
+            const qty = parseInt(newQty);
+            if (isNaN(qty) || qty < 1) {
+                renderCartModal(); // Reset ke angka sebelumnya jika input tidak valid
+                return;
+            }
+            
+            if (cart[id]) {
+                cart[id].qty = qty;
+                updateCartBadge();
+                renderCartModal();
+            }
+        }
+
+        function removeFromCart(id) {
+            delete cart[id];
+            updateCartBadge();
+            renderCartModal();
+        }
+
+        function renderCartModal() {
+            const modalItems = document.getElementById('modalCartItems');
+            const modalGrandTotal = document.getElementById('modalGrandTotal');
+            modalItems.innerHTML = '';
+            
+            let grandTotal = 0;
+            const productIds = Object.keys(cart);
+
+            if (productIds.length === 0) {
+                modalItems.innerHTML = '<div class="text-center text-gray-500 py-10">Keranjang Anda masih kosong. Silakan pilih produk terlebih dahulu.</div>';
+                modalGrandTotal.textContent = 'Rp 0';
+                return;
+            }
+
+            productIds.forEach((id) => {
+                const item = cart[id];
+                const subtotal = item.price * item.qty;
+                grandTotal += subtotal;
+
+                modalItems.innerHTML += `
+                    <div class="cart-item-anim flex items-center gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <img src="${item.image}" alt="${item.name}" 
+                             onerror="this.src='https://placehold.co/100x100/eeeeee/999999?text=${item.name}'" 
+                             class="w-20 h-20 object-cover rounded-lg border border-gray-100">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-bold text-gray-800">${item.name}</h3>
+                                <button onclick="removeFromCart(${item.id})" class="text-xs text-red-500 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-md flex items-center gap-1 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                                    Hapus
+                                </button>
+                            </div>
+                            <div class="text-sm mb-3">
+                                <span class="font-bold text-brand">${formatRupiah(item.price)}</span>
+                                <span class="text-gray-400">/${item.unit}</span>
+                            </div>
+                            <!-- Fitur ketik volume secara manual tetap ada -->
+                            <div class="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg w-max p-1">
+                                <button onclick="updateQty(${item.id}, -1)" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition-all">-</button>
+                                <input type="number" min="1" value="${item.qty}" 
+                                    onchange="updateQtyManual(${item.id}, this.value)" 
+                                    class="w-12 h-8 text-center bg-transparent font-semibold focus:outline-none focus:ring-1 focus:ring-brand rounded-md no-spinners">
+                                <button onclick="updateQty(${item.id}, 1)" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition-all">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            modalGrandTotal.textContent = formatRupiah(grandTotal);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(); // Render awal etalase
+
+            // Live Search
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                renderProducts(e.target.value);
+            });
+
+            // Modal Interactions
+            const modal = document.getElementById('cartModal');
+            const openBtn = document.getElementById('openCartBtn');
+            const closeBtn = document.getElementById('closeModalBtn');
+            const checkoutWA = document.getElementById('checkoutWA');
+
+            openBtn.addEventListener('click', () => {
+                renderCartModal();
+                modal.classList.remove('modal-hidden');
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.add('modal-hidden');
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('modal-hidden');
+                }
+            });
+
+            // Checkout ke WhatsApp
+            checkoutWA.addEventListener('click', () => {
+                const productIds = Object.keys(cart);
+                
+                if (productIds.length === 0) {
+                    // Membuat message box pengganti alert
+                    const msgBox = document.createElement('div');
+                    msgBox.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-xl z-[60] font-medium transition-all duration-300';
+                    msgBox.innerText = 'Keranjang Anda masih kosong. Silakan pilih barang terlebih dahulu.';
+                    document.body.appendChild(msgBox);
+                    setTimeout(() => { msgBox.style.opacity = '0'; setTimeout(() => msgBox.remove(), 300); }, 3000);
+                    return;
+                }
+
+                let text = `Halo Admin Koperasi, saya ingin memesan bahan baku berikut:nn`;
+                let totalPesanan = 0;
+
+                productIds.forEach((id, index) => {
+                    const item = cart[id];
+                    const subtotal = item.price * item.qty;
+                    totalPesanan += subtotal;
+                    
+                    text += `${index + 1}. ${item.name}n`;
+                    text += `   - Jumlah: ${item.qty} ${item.unit}n`;
+                    text += `   - Subtotal: ${formatRupiah(subtotal)}nn`;
+                });
+
+                text += `*Total Estimasi: ${formatRupiah(totalPesanan)}*nn`;
+                text += `Tolong konfirmasi ulang untuk ketersediaan stok dan harga finalnya. Terima kasih.`;
+
+                const noWA = "6283199744857"; 
+                const waLink = `https://wa.me/${noWA}?text=${encodeURIComponent(text)}`;
+                
+                window.open(waLink, '_blank');
+            });
+        });
+
+        // ==========================================
+        // EASTER EGG: Fitur Anti-Gravitasi (Google Space)
+        // ==========================================
+        function startAntiGravity() {
+            // Cek jika sudah berjalan, jangan ditimpa
+            if(window.gravityIsRunning) return;
+            window.gravityIsRunning = true;
+            
+            // Kunci layar agar tidak bisa di-scroll saat efek melayang aktif
+            document.body.style.overflow = 'hidden'; 
+            
+            // Targetkan semua elemen card, header, dan banner
+            const elements = document.querySelectorAll('.gravity-target, header, footer');
+            
+            elements.forEach(el => {
+                // Matikan CSS transitions agar physics jalan mulus
+                el.style.transition = 'none'; 
+                
+                // Variabel fisika per elemen
+                let x = 0;
+                let y = 0;
+                let vx = (Math.random() - 0.5) * 4; // Kecepatan horizontal acak
+                let vy = (Math.random() - 1) * 3;   // Cenderung bergerak ke atas (melayang)
+                let rot = 0;
+                let vrot = (Math.random() - 0.5) * 3; // Kecepatan putaran
+
+                // Loop animasi menggunakan requestAnimationFrame
+                function animatePhysics() {
+                    x += vx;
+                    y += vy;
+                    rot += vrot;
+
+                    // Pantulan dinding (Bouncing off bounds)
+                    const rect = el.getBoundingClientRect();
+                    // Pantul Horizontal
+                    if (rect.left <= 0 || rect.right >= window.innerWidth) {
+                        vx *= -1;
+                        x += vx * 2; // dorong sedikit agar tidak nyangkut
+                    }
+                    // Pantul Vertikal
+                    if (rect.top <= 0 || rect.bottom >= window.innerHeight) {
+                        vy *= -1;
+                        y += vy * 2;
+                    }
+
+                    // Terapkan translasi dan rotasi
+                    el.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+                    requestAnimationFrame(animatePhysics);
+                }
+                
+                // Mulai melayang
+                animatePhysics();
+                
+                // Interaksi kursor: Jika elemen disentuh mouse, berikan gaya lemparan acak
+                el.addEventListener('mouseenter', () => {
+                    vx = (Math.random() - 0.5) * 15;
+                    vy = (Math.random() - 0.5) * 15;
+                    vrot = (Math.random() - 0.5) * 10;
+                });
+            });
+        }
+    </script>
+    <!-- Tombol Konsultasi WhatsApp -->
+    <a href="https://wa.me/6283199744857?text=Halo%20Admin,%20saya%20ingin%20konsultasi%20bahan%20baku" target="_blank" class="fixed bottom-6 right-6 bg-[#25D366] text-white px-5 py-3 rounded-full shadow-lg hover:scale-105 transition-transform z-50 flex items-center justify-center gap-2" title="Konsultasi via WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-1.08L46,213.58l10.47-31.41a8,8,0,0,0-1.08-6.54A87.82,87.82,0,1,1,128,216Zm40-96H88a8,8,0,0,1,0-16h80a8,8,0,0,1,0,16Zm0,32H88a8,8,0,0,1,0-16h80a8,8,0,0,1,0,16Z"></path></svg>
+        <span class="font-bold hidden sm:inline">Hubungi Kami</span>
+    </a>
+</body>
+</html>
