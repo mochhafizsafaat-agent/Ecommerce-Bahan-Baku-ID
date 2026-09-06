@@ -515,7 +515,7 @@
                     return;
                 }
 
-                let text = `Halo Admin Koperasi, saya ingin memesan bahan baku berikut:nn`;
+                let text = `Halo Admin Bahan Baku ID, saya ingin memesan bahan baku berikut:\n\n`;
                 let totalPesanan = 0;
 
                 productIds.forEach((id, index) => {
@@ -523,12 +523,12 @@
                     const subtotal = item.price * item.qty;
                     totalPesanan += subtotal;
                     
-                    text += `${index + 1}. ${item.name}n`;
-                    text += `   - Jumlah: ${item.qty} ${item.unit}n`;
-                    text += `   - Subtotal: ${formatRupiah(subtotal)}nn`;
+                    text += `${index + 1}. ${item.name}\n`;
+                    text += `   - Jumlah: ${item.qty} ${item.unit}\n`;
+                    text += `   - Subtotal: ${formatRupiah(subtotal)}\n\n`;
                 });
 
-                text += `*Total Estimasi: ${formatRupiah(totalPesanan)}*nn`;
+                text += `*Total Estimasi: ${formatRupiah(totalPesanan)}*\n\n`;
                 text += `Tolong konfirmasi ulang untuk ketersediaan stok dan harga finalnya. Terima kasih.`;
 
                 const noWA = "6283199744857"; 
