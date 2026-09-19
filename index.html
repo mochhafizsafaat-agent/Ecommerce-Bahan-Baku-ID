@@ -92,6 +92,17 @@
             <svg class="absolute right-8 top-1/2 transform -translate-y-1/2 opacity-20 w-32 h-32 hidden md:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /><path d="M9 6v6" /><path d="M13 6.5v5.5" /><path d="M17 7v5" /><path d="M6.5 9h12" /></svg>
         </div>
 
+        <!-- Menu Kategori (Bisa di-scroll ke samping) -->
+        <style>
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        </style>
+        <div class="mb-6 overflow-x-auto pb-2 scrollbar-hide">
+            <div class="flex gap-2 px-1" id="categoryFilterContainer">
+                <!-- Tombol Kategori Akan Diisi via JavaScript -->
+            </div>
+        </div>
+
         <div id="productContainer">
             <!-- Etalase Produk Akan Diisi via JavaScript -->
         </div>
@@ -298,6 +309,26 @@
             'Jasa': '⚙️'
         };
 
+        let activeCategory = 'Semua';
+
+        function renderCategoryButtons() {
+            const container = document.getElementById('categoryFilterContainer');
+            const categories = ['Semua', ...new Set(products.map(p => p.category))];
+            
+            container.innerHTML = categories.map(cat => `
+                <button onclick="filterByCategory('${cat}')" 
+                        class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold border transition-all ${activeCategory === cat ? 'bg-brand text-white border-brand shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-brand hover:text-brand'}">
+                    ${cat === 'Semua' ? 'Semua Produk' : cat}
+                </button>
+            `).join('');
+        }
+
+        function filterByCategory(cat) {
+            activeCategory = cat;
+            renderCategoryButtons();
+            renderProducts(document.getElementById('searchInput').value);
+        }
+
         function renderProducts(searchQuery = '') {
             const container = document.getElementById('productContainer');
             container.innerHTML = '';
@@ -305,6 +336,8 @@
             const categories = [...new Set(products.map(p => p.category))];
 
             categories.forEach(category => {
+                if (activeCategory !== 'Semua' && category !== activeCategory) return;
+
                 const categoryProducts = products.filter(p => 
                     p.category === category && 
                     p.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -482,6 +515,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            renderCategoryButtons();
             renderProducts(); // Render awal etalase
 
             // Live Search
