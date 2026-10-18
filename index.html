@@ -215,7 +215,7 @@
     <script>
         // Database Produk Koperasi
         const products = [
-            // Karbohidrat
+            /* Karbohidrat (Dinonaktifkan Sementara)
             { id: 1, name: 'Beras Premium', price: 15000, unit: 'Kg', category: 'Karbohidrat', image: 'beras.png' },
             { id: 3, name: 'Jagung Manis', price: 17000, unit: 'Kg', category: 'Karbohidrat', image: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=400&q=80' },
             { id: 4, name: 'Singkong', price: 8000, unit: 'Kg', category: 'Karbohidrat', image: 'singkong.png' },
@@ -223,12 +223,8 @@
             { id: 30, name: 'Ubi Kuning', price: 10000, unit: 'Kg', category: 'Karbohidrat', image: 'ubi_kuning.png' },
             { id: 31, name: 'Ubi Ungu', price: 12000, unit: 'Kg', category: 'Karbohidrat', image: 'ubi_ungu.png' },
             { id: 6, name: 'Kentang Dieng', price: 16000, unit: 'Kg', category: 'Karbohidrat', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=400&q=80' },
-            { id: 52, name: 'Topokki (Tteokbokki)', price: 39000, unit: 'Kg', category: 'Karbohidrat', image: 'topokki.png' },
-            { id: 53, name: 'French Fries Frozen', price: 28000, unit: 'Kg', category: 'Karbohidrat', image: 'french_fries.jpg' },
             { id: 71, name: 'Kimpul', price: 12000, unit: 'Kg', category: 'Karbohidrat', image: 'kimpul.jpg' },
-            { id: 110, name: 'Dimsum Mini 20 gram (100 pcs / box)', price: 118000, unit: 'Box', category: 'Karbohidrat', image: 'dimsum_mini.jpg' },
-            { id: 111, name: 'Dimsum Medium 25 gram (100 pcs / box)', price: 175000, unit: 'Box', category: 'Karbohidrat', image: 'dimsum_medium.jpg' },
-            { id: 112, name: 'Dimsum Jumbo 35 gram (100 pcs / box)', price: 210000, unit: 'Box', category: 'Karbohidrat', image: 'dimsum_jumbo.jpg' },
+            */
 
             // Protein Hewani
             { id: 8, name: 'Ayam (1 Kg = 10 Potong)', price: 34000, unit: 'Kg', category: 'Protein Hewani', image: 'ayam_potong.png', orderType: 'Delivery' },
@@ -262,13 +258,18 @@
             { id: 41, name: 'Tahu Pong', price: 500, unit: 'Pcs', category: 'Protein Nabati', image: 'tahu_pong.png', orderType: 'Delivery' },
             { id: 105, name: 'Tahu Bulat', price: 200, unit: 'Pcs', category: 'Protein Nabati', image: 'tahu_bulat.png', orderType: 'Delivery' },
             { id: 14, name: 'Tempe', price: 4500, unit: 'Papan', category: 'Protein Nabati', image: 'tempe.jpg', orderType: 'Delivery' },
-            { id: 72, name: 'Tempe Azaki', price: 7500, unit: 'Papan', category: 'Protein Nabati', image: 'tempe_azaki.png', orderType: 'Delivery' },
+            { id: 72, name: 'Tempe Azaki', price: 7000, unit: 'Papan', category: 'Protein Nabati', image: 'tempe_azaki.png', orderType: 'Delivery' },
 
-            // Sayuran (Hanya item yang aktif sementara)
-            { id: 29, name: 'Mix Vegetables', price: 27000, unit: 'Kg', category: 'Sayuran', image: 'mix_vegetables.jpg' },
-            { id: 44, name: 'Edamame', price: 38000, unit: 'Kg', category: 'Sayuran', image: 'edamame.png' },
-            { id: 59, name: 'Kacang Polong Frozen', price: 35000, unit: 'Pack (1 Kg)', category: 'Sayuran', image: 'kacang_polong.png' },
-            { id: 89, name: 'Jagung Pipil', price: 26000, unit: 'Kg', category: 'Sayuran', image: 'jagung_pipil.png' },
+            // Frozen
+            { id: 52, name: 'Topokki (Tteokbokki)', price: 39000, unit: 'Kg', category: 'Frozen', image: 'topokki.png' },
+            { id: 53, name: 'French Fries Frozen', price: 28000, unit: 'Kg', category: 'Frozen', image: 'french_fries.jpg' },
+            { id: 110, name: 'Dimsum Mini 20 gram (100 pcs / box)', price: 118000, unit: 'Box', category: 'Frozen', image: 'dimsum_mini.jpg' },
+            { id: 111, name: 'Dimsum Medium 25 gram (100 pcs / box)', price: 175000, unit: 'Box', category: 'Frozen', image: 'dimsum_medium.jpg' },
+            { id: 112, name: 'Dimsum Jumbo 35 gram (100 pcs / box)', price: 210000, unit: 'Box', category: 'Frozen', image: 'dimsum_jumbo.jpg' },
+            { id: 29, name: 'Mix Vegetables', price: 27000, unit: 'Kg', category: 'Frozen', image: 'mix_vegetables.jpg' },
+            { id: 44, name: 'Edamame', price: 38000, unit: 'Kg', category: 'Frozen', image: 'edamame.png' },
+            { id: 59, name: 'Kacang Polong Frozen', price: 35000, unit: 'Pack (1 Kg)', category: 'Frozen', image: 'kacang_polong.png' },
+            { id: 89, name: 'Jagung Pipil', price: 26000, unit: 'Kg', category: 'Frozen', image: 'jagung_pipil.png' },
 
             /* Sayuran Lain (Dinonaktifkan Sementara)
             { id: 15, name: 'Bayam Hijau', price: 11000, unit: 'Kg', category: 'Sayuran', image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=400&q=80' },
@@ -324,7 +325,6 @@
             { id: 68, name: 'Buah Pear', price: 30000, unit: 'Kg', category: 'Buah-buahan', image: 'buah_pear.png', inStock: false },
             { id: 88, name: 'Mangga Golek', price: 18000, unit: 'Kg', category: 'Buah-buahan', image: 'mangga_golek.jpg' },
             { id: 96, name: 'Buah Kiwi', price: 50000, unit: 'Kg', category: 'Buah-buahan', image: 'kiwi.png' },
-            { id: 97, name: 'Buah Strawberry', price: 42000, unit: 'Kg', category: 'Buah-buahan', image: 'strawberry.jpg', orderType: 'Delivery' },
 
             // Susu
             { id: 35, name: 'Susu Full Cream 115 ml', price: 115000, unit: 'Karton (40 pcs)', category: 'Susu', image: 'susu_115ml.png', orderType: 'Delivery' },
@@ -358,9 +358,9 @@
 
         // Ikon per kategori
         const categoryIcons = {
-            'Karbohidrat': '🌾',
             'Protein Hewani': '🥩',
             'Protein Nabati': '🌿',
+            'Frozen': '❄️',
             'Buah-buahan': '🍎',
             'Sayuran': '🥬',
             'Susu': '🥛',
